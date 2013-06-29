@@ -190,42 +190,7 @@ if ($errormessage) {
 
 &Header::openbox('100%','left',$Lang::tr{'gui settings'});
 
-print <<END
-<form method='post' action='$ENV{'SCRIPT_NAME'}'>
-<table width='100%'>
-<tr>
-    <td colspan='2'><p><b>$Lang::tr{'display'}</b></td>
-</tr>
-<tr>
-    <td><input type='checkbox' name='FX' $checked{'FX'}{'on'} /></td>
-    <td>$Lang::tr{'display webinterface effects'}</td>
-</tr>
-<tr>
-    <td><input type='checkbox' name='WINDOWWITHHOSTNAME' $checked{'WINDOWWITHHOSTNAME'}{'on'} /></td>
-    <td>$Lang::tr{'display hostname in window title'}</td>
-</tr>
-<tr>
-    <td><input type='checkbox' name='REBOOTQUESTION' $checked{'REBOOTQUESTION'}{'on'} /></td>
-    <td>$Lang::tr{'reboot question'}</td>
-</tr>
-<tr>
-    <td><input type='checkbox' name='REFRESHINDEX' $checked{'REFRESHINDEX'}{'on'} /></td>
-    <td>$Lang::tr{'refresh index page while connected'}</td>
-</tr>
-<tr>
-    <td><input type='checkbox' name='SPEED' $checked{'SPEED'}{'on'} /></td>
-    <td>$Lang::tr{'show ajax speedmeter in footer'}</td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>$Lang::tr{'languagepurpose'}</td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><select name='lang'>
-END
-;
-
+my $sSelectLang = '';
 my $id=0;
 open(FILE,"${General::swroot}/langs/list");
 while (<FILE>)
@@ -236,28 +201,18 @@ while (<FILE>)
         $id++;
         chomp;
         ($lang,$engname,$natname) = split (/:/, $_, 3);
-	print "<option value='$lang' ";
+	$sSelectLang .= "<option value='$lang' ";
 	if ($lang =~ /$mainsettings{'LANGUAGE'}/)
 	{
-		print " selected='selected'";
+		$sSelectLang .= " selected='selected'";
 	}
-	print <<END
+	$sSelectLang .= <<END
 >$engname ($natname)</option>
 END
-	;
+;
 }
 
-print <<END
-</select></td></tr>
-<tr>
-    <td colspan='2'><hr /><p><b>$Lang::tr{'theme'}</b></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><select name='theme'>
-END
-;
-
+my $sSelectTheme = '';
 my $dir = "/srv/web/ipfire/html/themes";
 local *DH;
 my ($item, $file);
@@ -274,33 +229,72 @@ closedir (DH);
 
 foreach $item (sort (@files)) {
 	if ( "$mainsettings{'THEME'}" eq "$item" ) {
-		print "<option value='$item' selected='selected'>$item</option>\n";
+		$sSelectTheme .= "<option value='$item' selected='selected'>$item</option>\n";
 	} else {
-		print "<option value='$item'>$item</option>\n";
+		$sSelectTheme .= "<option value='$item'>$item</option>\n";
 	}
 }
 
+
 print <<END
-</select></td></tr>
-<tr>
-    <td colspan='2'><hr /><p><b>$Lang::tr{'sound'}</b></td>
-</tr>
-<tr>
-    <td><input type ='checkbox' name='PPPUPDOWNBEEP' $checked{'PPPUPDOWNBEEP'}{'on'} /></td>
-    <td>$Lang::tr{'beep when ppp connects or disconnects'}</td>
-</tr>
-<tr>
-    <td colspan='2'><hr /></td>
-</tr>
-</table>
-<div align='center'>
-<table width='80%'>
-<tr>
-    <td width='50%' align='center'><input type='submit' name='ACTION' value='$Lang::tr{'restore defaults'}' /></td>
-    <td width='50%' align='center'><input type='submit' name='ACTION' value='$Lang::tr{'save'}' /></td>
-</tr>
-</table>
+<style type="text/css">
+label {
+	width:100%;
+	margin:.4em;
+}
+</style>
+<form method='post' action='$ENV{'SCRIPT_NAME'}'>
+<div>
+<div style="width:40%;float:left;margin:.4em .4em 0 0">
+	<strong>$Lang::tr{'display'}</strong>
+	<div style="font-size: 80%;margin:.4em">
+		<input type='checkbox' name='FX' id="FX" $checked{'FX'}{'on'} />
+		<label for="FX">$Lang::tr{'display webinterface effects'}</label>
+		<br />
+		<input type='checkbox' name='WINDOWWITHHOSTNAME' id='WINDOWWITHHOSTNAME' $checked{'WINDOWWITHHOSTNAME'}{'on'} />
+		<label for="WINDOWWITHHOSTNAME">$Lang::tr{'display hostname in window title'}</label>
+		<br />
+		<input type='checkbox' name='REBOOTQUESTION' id='REBOOTQUESTION' $checked{'REBOOTQUESTION'}{'on'} />
+		<label for="REBOOTQUESTION">$Lang::tr{'reboot question'}</label>
+		<br />
+		<input type='checkbox' name='REFRESHINDEX' id='REFRESHINDEX' $checked{'REFRESHINDEX'}{'on'} />
+		<label for="REFRESHINDEX">$Lang::tr{'refresh index page while connected'}</label>
+		<br />
+		<input type='checkbox' name='SPEED' id="SPEED" $checked{'SPEED'}{'on'} />
+		<label for="SPEED">$Lang::tr{'show ajax speedmeter in footer'}</label>
+	</div>
+	<strong>$Lang::tr{'sound'}</strong>
+	<div style="margin:.4em;font-size: 80%">
+		<input type ='checkbox' name='PPPUPDOWNBEEP' id='PPPUPDOWNBEEP' $checked{'PPPUPDOWNBEEP'}{'on'} />
+		<label style="width:100%" for='PPPUPDOWNBEEP'>$Lang::tr{'beep when ppp connects or disconnects'}</label>
+	</div>
 </div>
+
+<div style="width:40%;float:right;margin:.4em 0 0 0">
+	<strong>$Lang::tr{'languagepurpose'}</strong>
+	<div style="margin:.4em">
+		<select style="width:100%" name='lang'>
+		$sSelectLang
+		</select>
+	</div>
+
+	<strong>$Lang::tr{'theme'}</strong>
+	<div style="margin:.4em">
+		<select style="width:100%" name='theme'>
+			$sSelectTheme
+		</select>
+	</div>
+</div>
+</div>
+<br class="clear" />
+<div style="float:right">
+	<input type='submit' name='ACTION' value='$Lang::tr{'restore defaults'}' />
+	<input type='submit' name='ACTION' value='$Lang::tr{'save'}' />
+</div>
+
+
+
+
 </form>
 END
 ;
