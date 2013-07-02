@@ -25,8 +25,8 @@ use Net::IPv4Addr qw( :all );
 use Switch;
 
 # enable only the following on debugging purpose
-#use warnings;
-#use CGI::Carp 'fatalsToBrowser';
+use warnings;
+use CGI::Carp 'fatalsToBrowser';
 
 require '/var/ipfire/general-functions.pl';
 require "${General::swroot}/lang.pl";
@@ -39,6 +39,8 @@ my $colour_multicast = "#A0A0A0";
 my $SORT_FIELD = 0;
 # the sort order. (a)scending orr (d)escending
 my $SORT_ORDER = 0;
+# number of entries at conntrack table
+my $COUNT_CONN_ENTRIES = 0;
 # cgi query arguments
 my %cgiin;
 # debug mode
@@ -104,6 +106,8 @@ if ($SORT_FIELD and $SORT_ORDER) {
 }
 my @conntrack = <CONNTRACK>;
 close(CONNTRACK);
+
+$COUNT_CONN_ENTRIES = scalar(@conntrack);
 
 # Collect data for the @network array.
 
@@ -336,8 +340,15 @@ if ($SORT_FIELD and $SORT_ORDER) {
 	}
 
 print <<END
-	<div style="font-weight:bold;margin:10px;font-size: 70%">
-		$sort_order_name: $sort_field_name[$SORT_FIELD-1]
+	<div style="font-weight:bold;margin:10px;font-size: 80%">
+		$sort_order_name: ($COUNT_CONN_ENTRIES) entries with $sort_field_name[$SORT_FIELD-1] .
+	</div>
+END
+;
+} else {
+print <<END
+	<div style="font-weight:bold;margin:10px;font-size: 80%">
+		Displaying ($COUNT_CONN_ENTRIES) unsorted entries.
 	</div>
 END
 ;
