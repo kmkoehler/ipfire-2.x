@@ -341,14 +341,14 @@ if ($SORT_FIELD and $SORT_ORDER) {
 
 print <<END
 	<div style="font-weight:bold;margin:10px;font-size: 80%">
-		$sort_order_name: ($COUNT_CONN_ENTRIES) entries with $sort_field_name[$SORT_FIELD-1] .
+		$sort_order_name: ($COUNT_CONN_ENTRIES) $Lang::tr{'connection records sorted with'} $sort_field_name[$SORT_FIELD-1].
 	</div>
 END
 ;
 } else {
 print <<END
 	<div style="font-weight:bold;margin:10px;font-size: 80%">
-		Displaying ($COUNT_CONN_ENTRIES) unsorted entries.
+		$Lang::tr{'connection displaying'} ($COUNT_CONN_ENTRIES) $Lang::tr{'connection unsorted records'}.
 	</div>
 END
 ;
